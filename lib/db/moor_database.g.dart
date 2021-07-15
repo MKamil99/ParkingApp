@@ -8,14 +8,14 @@ part of 'moor_database.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
 class Location extends DataClass implements Insertable<Location> {
-  final int id;
+  final int? id;
   final double latitude;
   final double longitude;
   final String name;
   final String description;
   final int? ranking;
   Location(
-      {required this.id,
+      {this.id,
       required this.latitude,
       required this.longitude,
       required this.name,
@@ -25,8 +25,7 @@ class Location extends DataClass implements Insertable<Location> {
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return Location(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      id: const IntType().mapFromDatabaseResponse(data['${effectivePrefix}id']),
       latitude: const RealType()
           .mapFromDatabaseResponse(data['${effectivePrefix}latitude'])!,
       longitude: const RealType()
@@ -42,7 +41,9 @@ class Location extends DataClass implements Insertable<Location> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
+    if (!nullToAbsent || id != null) {
+      map['id'] = Variable<int?>(id);
+    }
     map['latitude'] = Variable<double>(latitude);
     map['longitude'] = Variable<double>(longitude);
     map['name'] = Variable<String>(name);
@@ -55,7 +56,7 @@ class Location extends DataClass implements Insertable<Location> {
 
   LocationsCompanion toCompanion(bool nullToAbsent) {
     return LocationsCompanion(
-      id: Value(id),
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       latitude: Value(latitude),
       longitude: Value(longitude),
       name: Value(name),
@@ -70,7 +71,7 @@ class Location extends DataClass implements Insertable<Location> {
       {ValueSerializer? serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return Location(
-      id: serializer.fromJson<int>(json['id']),
+      id: serializer.fromJson<int?>(json['id']),
       latitude: serializer.fromJson<double>(json['latitude']),
       longitude: serializer.fromJson<double>(json['longitude']),
       name: serializer.fromJson<String>(json['name']),
@@ -82,7 +83,7 @@ class Location extends DataClass implements Insertable<Location> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= moorRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'id': serializer.toJson<int?>(id),
       'latitude': serializer.toJson<double>(latitude),
       'longitude': serializer.toJson<double>(longitude),
       'name': serializer.toJson<String>(name),
@@ -141,7 +142,7 @@ class Location extends DataClass implements Insertable<Location> {
 }
 
 class LocationsCompanion extends UpdateCompanion<Location> {
-  final Value<int> id;
+  final Value<int?> id;
   final Value<double> latitude;
   final Value<double> longitude;
   final Value<String> name;
@@ -167,7 +168,7 @@ class LocationsCompanion extends UpdateCompanion<Location> {
         name = Value(name),
         description = Value(description);
   static Insertable<Location> custom({
-    Expression<int>? id,
+    Expression<int?>? id,
     Expression<double>? latitude,
     Expression<double>? longitude,
     Expression<String>? name,
@@ -185,7 +186,7 @@ class LocationsCompanion extends UpdateCompanion<Location> {
   }
 
   LocationsCompanion copyWith(
-      {Value<int>? id,
+      {Value<int?>? id,
       Value<double>? latitude,
       Value<double>? longitude,
       Value<String>? name,
@@ -205,7 +206,7 @@ class LocationsCompanion extends UpdateCompanion<Location> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<int?>(id.value);
     }
     if (latitude.present) {
       map['latitude'] = Variable<double>(latitude.value);
@@ -246,7 +247,7 @@ class $LocationsTable extends Locations
   $LocationsTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
-      'id', aliasedName, false,
+      'id', aliasedName, true,
       typeName: 'INTEGER',
       requiredDuringInsert: false,
       defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:parking_app/db/moor_database.dart';
 
 class AddParkingPage extends StatefulWidget {
   const AddParkingPage({Key? key}) : super(key: key);
@@ -12,14 +14,16 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
   // Data:
   double? latitude;
   double? longitude;
-  String? name;
-  String? description;
+  String name = '';
+  String description = '';
   int? ranking;
-  bool canAdd() => latitude != null && longitude != null && name != null && name!.isNotEmpty;
+  bool canAdd() => latitude != null && longitude != null && name.isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final database = Provider.of<AppDatabase>(context);
+
     return Scaffold(
       body: Center(
           child: Padding(
@@ -74,7 +78,7 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
                 ),
                 ElevatedButton(
                   // Null makes the button disable:
-                  onPressed: canAdd() ? () => addLocation() : null,
+                  onPressed: canAdd() ? () => addLocation(context, database) : null,
                   child: Text("Add"),
                 ),
               ],
@@ -85,8 +89,18 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
   }
 
   // Adding parking location to database:
-  void addLocation() {
-
+  void addLocation(BuildContext context, AppDatabase database) {
+    setState(() {
+      database.insertLocation(
+          Location(
+              name: name,
+              latitude: latitude!,
+              longitude: longitude!,
+              description: description,
+              ranking: ranking
+          )
+      );
+    });
   }
 
   // Making sure that state will not be lost after changing page:

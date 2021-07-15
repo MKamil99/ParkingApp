@@ -1,12 +1,12 @@
-// Code used in this file bases on YouTube tutorial:
-// https://www.youtube.com/watch?v=zpWsedYMczM
+// Code used in this file bases on tutorial
+// https://medium.com/flutterdevs/moor-database-in-flutter-6a78d91b10e5
 
 import 'package:moor_flutter/moor_flutter.dart';
 part 'moor_database.g.dart';
 
 // SQLite table:
 class Locations extends Table {
-  IntColumn get id => integer().autoIncrement()();
+  IntColumn get id => integer().autoIncrement().nullable()();
   RealColumn get latitude => real()();
   RealColumn get longitude => real()();
   TextColumn get name => text().withLength(min: 1, max: 30)();
@@ -17,10 +17,10 @@ class Locations extends Table {
 @UseMoor(tables: [Locations])
 class AppDatabase extends _$AppDatabase {
   // Creating database (saving it in file):
-  AppDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(path: 'db.sqlite'));
+  AppDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(
+      path: 'db.sqlite', logStatements: true));
 
   // Version of database:
-  @override
   int get schemaVersion => 1;
 
   // Database methods:
