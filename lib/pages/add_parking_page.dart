@@ -1,9 +1,8 @@
 // Minor part of the code used in this file bases on
 // https://stackoverflow.com/questions/53652573/fix-google-map-marker-in-center
 
-// TODO: Fix layout (keyboard overflows text fields), clear fields after submitting,
-// TODO: locate user on map (position + zoom; to improve adding new parking),
-// TODO: change pin icon, add "Rating" label
+// TODO: Clear fields after submitting, change pin icon, add "Rating" label,
+// TODO: locate user on map (position + zoom; to improve adding new parking)
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -41,59 +40,66 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
     double iconSize = 30.0;
 
     return Scaffold(
-      body: Column(
-        children: [
-          Stack(
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height
+              - kToolbarHeight - kBottomNavigationBarHeight - 25,
+          width: MediaQuery.of(context).size.width,
+          child: Column(
             children: [
-              Container(
-                height: mapHeight,
-                width: mapWidth,
-                child: GoogleMap(
-                  initialCameraPosition: _initialPosition,
-                  onCameraMove: ((position) => updatePosition(position)),
-                ),
-              ),
-              Positioned(
-                top: (mapHeight - iconSize) / 2,
-                left: (mapWidth - iconSize) / 2,
-                child: Icon(Icons.push_pin, color: Colors.red.shade800, size: iconSize),
-              ),
-            ],
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Stack(
                 children: [
-                  TextField(
-                    decoration: InputDecoration(labelText: "Name"),
-                    onChanged: (str) { setState(() { _name = str; }); },
-                  ),
-                  TextField(
-                    decoration: InputDecoration(labelText: "Description"),
-                    onChanged: (str) { setState(() { _description = str; }); },
-                  ),
-                  RatingBar.builder(
-                    itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                    itemBuilder: (context, _) => Icon(
-                      Icons.star,
-                      color: Colors.amber,
+                  Container(
+                    height: mapHeight,
+                    width: mapWidth,
+                    child: GoogleMap(
+                      initialCameraPosition: _initialPosition,
+                      onCameraMove: ((position) => updatePosition(position)),
                     ),
-                    onRatingUpdate: (rating) {
-                      _ranking = rating.toInt();
-                    },
+                  ),
+                  Positioned(
+                    top: (mapHeight - iconSize) / 2,
+                    left: (mapWidth - iconSize) / 2,
+                    child: Icon(Icons.push_pin, color: Colors.red.shade800, size: iconSize),
                   ),
                 ],
               ),
-            ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextField(
+                        decoration: InputDecoration(labelText: "Name"),
+                        onChanged: (str) { setState(() { _name = str; }); },
+                      ),
+                      TextField(
+                        decoration: InputDecoration(labelText: "Description"),
+                        onChanged: (str) { setState(() { _description = str; }); },
+                      ),
+                      RatingBar.builder(
+                        itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                        itemBuilder: (context, _) => Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        onRatingUpdate: (rating) {
+                          _ranking = rating.toInt();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                // Null makes the button disable:
+                onPressed: canAdd() ? () => addLocation(context, database) : null,
+                child: Text("Add"),
+              ),
+            ],
           ),
-          ElevatedButton(
-            // Null makes the button disable:
-            onPressed: canAdd() ? () => addLocation(context, database) : null,
-            child: Text("Add"),
-          ),
-        ],
+        ),
       ),
     );
   }
