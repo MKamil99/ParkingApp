@@ -14,11 +14,39 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   Completer<GoogleMapController> _controller = Completer();
+  Set<Marker> _locations = {};
 
   static final CameraPosition _initialPosition = CameraPosition(
     target: LatLng(50.36, 18.93),
-    zoom: 15,
+    zoom: 9,
   );
+
+  @override
+  initState() {
+    super.initState();
+    initDatabase();
+  }
+
+  void initDatabase() async {
+    await Future.delayed(Duration(seconds: 1));
+    final database = Provider.of<AppDatabase>(context, listen: false);
+    database.watchAllLocations().listen((data) {
+      Set<Marker> tmp = {};
+      for (Location location in data) {
+        tmp.add(Marker(
+          markerId: MarkerId(location.name),
+          position: LatLng(location.latitude, location.longitude),
+          infoWindow: InfoWindow(
+            title: location.name,
+            snippet: location.description,
+          ),
+        ));
+      }
+      setState(() {
+        _locations = tmp;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +54,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     return new Scaffold(
       body: GoogleMap(
         initialCameraPosition: _initialPosition,
+        markers: _locations,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
