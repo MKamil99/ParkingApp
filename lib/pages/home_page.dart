@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:parking_app/db/moor_database.dart';
 
@@ -10,35 +13,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+  Completer<GoogleMapController> _controller = Completer();
+
+  static final CameraPosition _initialPosition = CameraPosition(
+    target: LatLng(50.36, 18.93),
+    zoom: 15,
+  );
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final database = Provider.of<AppDatabase>(context);
-
-    return Scaffold(
-      body: Column(
-        children: [Container(
-          height: 400,
-          width: double.infinity,
-          child: StreamBuilder(
-                stream: database.watchAllLocations(),
-                builder: (context, AsyncSnapshot<List<Location>> snapshot) {
-                  final locations = snapshot.data ?? List.empty();
-                  return ListView.builder(
-                    itemBuilder: (_, index) {
-                        return Card(
-                            child: ListTile(
-                              title: Text(locations[index].name),
-                              subtitle: Text("(" + locations[index].longitude.toString()
-                                  + ", " + locations[index].latitude.toString() + ")"),
-                            )
-                        );
-                      },
-                    itemCount: locations.length,
-                  );
-                }
-            ),
-        )],
+    return new Scaffold(
+      body: GoogleMap(
+        initialCameraPosition: _initialPosition,
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
       ),
     );
   }
