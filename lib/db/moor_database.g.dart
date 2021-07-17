@@ -263,7 +263,7 @@ class $LocationsTable extends Locations
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
       'name', aliasedName, false,
       additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 30),
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 20),
       typeName: 'TEXT',
       requiredDuringInsert: true);
   final VerificationMeta _descriptionMeta =
@@ -271,7 +271,7 @@ class $LocationsTable extends Locations
   late final GeneratedColumn<String?> description = GeneratedColumn<String?>(
       'description', aliasedName, false,
       additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 0, maxTextLength: 100),
+          GeneratedColumn.checkTextLength(minTextLength: 0, maxTextLength: 50),
       typeName: 'TEXT',
       requiredDuringInsert: true);
   final VerificationMeta _rankingMeta = const VerificationMeta('ranking');

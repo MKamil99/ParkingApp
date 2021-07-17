@@ -9,8 +9,8 @@ class Locations extends Table {
   IntColumn get id => integer().autoIncrement().nullable()();
   RealColumn get latitude => real()();
   RealColumn get longitude => real()();
-  TextColumn get name => text().withLength(min: 1, max: 30)();
-  TextColumn get description => text().withLength(min: 0, max: 100)();
+  TextColumn get name => text().withLength(min: 1, max: 20)();
+  TextColumn get description => text().withLength(min: 0, max: 50)();
   IntColumn get ranking => integer().nullable()();
 }
 

@@ -1,7 +1,8 @@
 // Minor part of the code used in this file bases on
-// https://stackoverflow.com/questions/53652573/fix-google-map-marker-in-center
+// https://stackoverflow.com/questions/53652573/fix-google-map-marker-in-center;
+// Pin icon made by Vectors Market from www.flaticon.com
 
-// TODO: Clear fields after submitting, change pin icon, add "Rating" label
+// TODO: Clear fields after submitting
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -23,7 +24,7 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
   double? _longitude;
   String _name = '';
   String _description = '';
-  int? _ranking;
+  int? _rating;
   bool canAdd() => _latitude != null && _longitude != null && _name.isNotEmpty;
 
   // Poland as initial camera position:
@@ -61,9 +62,9 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
                     ),
                   ),
                   Positioned(
-                    top: (mapHeight - iconSize) / 2,
+                    top: (mapHeight) / 2 - iconSize,
                     left: (mapWidth - iconSize) / 2,
-                    child: Icon(Icons.push_pin, color: Colors.red.shade800, size: iconSize),
+                    child: Image.asset('assets/parking_marker.png', height: iconSize, width: iconSize),
                   ),
                 ],
               ),
@@ -76,20 +77,29 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
                       TextField(
                         decoration: InputDecoration(labelText: "Name"),
                         onChanged: (str) { setState(() { _name = str; }); },
+                        maxLength: 20,
                       ),
                       TextField(
                         decoration: InputDecoration(labelText: "Description"),
                         onChanged: (str) { setState(() { _description = str; }); },
+                        maxLength: 50,
+                        maxLines: 2,
                       ),
-                      RatingBar.builder(
-                        itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                        itemBuilder: (context, _) => Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        onRatingUpdate: (rating) {
-                          _ranking = rating.toInt();
-                        },
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Rating: "),
+                          RatingBar.builder(
+                            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                            itemBuilder: (context, _) => Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            onRatingUpdate: (rating) {
+                              _rating = rating.toInt();
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -116,7 +126,7 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
               latitude: _latitude!,
               longitude: _longitude!,
               description: _description,
-              ranking: _ranking
+              ranking: _rating
           )
       );
     });

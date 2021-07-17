@@ -1,6 +1,7 @@
 // Code used in this file bases on https://www.youtube.com/watch?v=gTHKFRRSPss
 // and https://levelup.gitconnected.com/how-to-add-google-maps-in-a-flutter-app-and-get-the-current-location-of-the-user-dynamically-2172f0be53f6
-// (it is also used in Add Parking Page's map)
+// (it is also used in Add Parking Page's map);
+// Pin icon made by Vectors Market from www.flaticon.com
 
 // TODO: Show last-added location at the start, display ranking, add possibility to delete (or even edit) location
 
@@ -27,9 +28,20 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     zoom: 5.75,
   );
 
+  // Custom marker:
+  late BitmapDescriptor _marker;
+  void setupCustomMarker() async {
+    _marker = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(),
+        'assets/parking_marker.png'
+    );
+  }
+
+  // Database:
   @override
   initState() {
     super.initState();
+    setupCustomMarker();
     initDatabase();
   }
 
@@ -40,6 +52,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       Set<Marker> tmp = {};
       for (Location location in data) {
         tmp.add(Marker(
+          icon: _marker,
           markerId: MarkerId(location.name),
           position: LatLng(location.latitude, location.longitude),
           infoWindow: InfoWindow(
@@ -53,6 +66,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       });
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
