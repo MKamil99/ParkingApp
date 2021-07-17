@@ -2,8 +2,6 @@
 // https://stackoverflow.com/questions/53652573/fix-google-map-marker-in-center;
 // Pin icon made by Vectors Market from www.flaticon.com
 
-// TODO: Clear fields after submitting
-
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -33,13 +31,17 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
     zoom: 5.75,
   );
 
+  // Text field controllers:
+  final _nameFieldController = TextEditingController();
+  final _descFieldController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final database = Provider.of<AppDatabase>(context);
-    double mapHeight = MediaQuery.of(context).size.height / 3;
-    double mapWidth = MediaQuery.of(context).size.width;
-    double iconSize = 30.0;
+    final _database = Provider.of<AppDatabase>(context);
+    double _mapHeight = MediaQuery.of(context).size.height / 3;
+    double _mapWidth = MediaQuery.of(context).size.width;
+    double _iconSize = 30.0;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -52,8 +54,8 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
               Stack(
                 children: [
                   Container(
-                    height: mapHeight,
-                    width: mapWidth,
+                    height: _mapHeight,
+                    width: _mapWidth,
                     child: GoogleMap(
                       initialCameraPosition: _initialPosition,
                       onCameraMove: ((position) => updatePosition(position)),
@@ -62,9 +64,9 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
                     ),
                   ),
                   Positioned(
-                    top: (mapHeight) / 2 - iconSize,
-                    left: (mapWidth - iconSize) / 2,
-                    child: Image.asset('assets/parking_marker.png', height: iconSize, width: iconSize),
+                    top: (_mapHeight) / 2 - _iconSize,
+                    left: (_mapWidth - _iconSize) / 2,
+                    child: Image.asset('assets/parking_marker.png', height: _iconSize, width: _iconSize),
                   ),
                 ],
               ),
@@ -78,12 +80,14 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
                         decoration: InputDecoration(labelText: "Name"),
                         onChanged: (str) { setState(() { _name = str; }); },
                         maxLength: 20,
+                        controller: _nameFieldController,
                       ),
                       TextField(
                         decoration: InputDecoration(labelText: "Description"),
                         onChanged: (str) { setState(() { _description = str; }); },
                         maxLength: 50,
-                        maxLines: 2,
+                        maxLines: 1,
+                        controller: _descFieldController,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -107,7 +111,7 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
               ),
               ElevatedButton(
                 // Null makes the button disable:
-                onPressed: canAdd() ? () => addLocation(context, database) : null,
+                onPressed: canAdd() ? () => addLocation(context, _database) : null,
                 child: Text("Add"),
               ),
             ],
@@ -119,6 +123,7 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
 
   // Adding parking location to database:
   void addLocation(BuildContext context, AppDatabase database) {
+    // Update ui and database:
     setState(() {
       database.insertLocation(
           Location(
@@ -130,6 +135,22 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
           )
       );
     });
+
+    // Clear text fields:
+    _nameFieldController.clear();
+    _descFieldController.clear();
+
+    // Place camera in current location:
+    _locatedOnce = false;
+
+    // Reset properties:
+    _latitude = null;
+    _longitude = null;
+    _name = '';
+    _description = '';
+    _rating = null;
+
+    // TODO: Reset rating bar
   }
 
   // Updating _latitude and _longitude variables after moving camera:
@@ -137,7 +158,6 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
     _longitude = position.target.longitude;
     _latitude = position.target.latitude;
   }
-
 
   // Locate user on map (but only for the first time, after launching the app):
   gps.Location _location = gps.Location();
@@ -154,7 +174,6 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
       }
     });
   }
-
 
   // Making sure that state will not be lost after changing page:
   @override
