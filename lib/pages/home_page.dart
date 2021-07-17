@@ -1,11 +1,15 @@
-// TODO: Locate user on map (+ button), show last-added location at the start,
-// TODO: display ranking, add possibility to delete (or even edit) location
+// Code used in this file bases on https://www.youtube.com/watch?v=gTHKFRRSPss
+// and https://levelup.gitconnected.com/how-to-add-google-maps-in-a-flutter-app-and-get-the-current-location-of-the-user-dynamically-2172f0be53f6
+// (it is also used in Add Parking Page's map)
+
+// TODO: Show last-added location at the start, display ranking, add possibility to delete (or even edit) location
 
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:parking_app/db/moor_database.dart';
+import 'package:location/location.dart' as gps;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -15,12 +19,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
-  Completer<GoogleMapController> _controller = Completer();
-  Set<Marker> _locations = {};
+  Set<Marker> _markers = {};
 
+  // Poland as initial camera position:
   static final CameraPosition _initialPosition = CameraPosition(
-    target: LatLng(50.36, 18.93),
-    zoom: 9,
+    target: LatLng(52.90, 19),
+    zoom: 5.75,
   );
 
   @override
@@ -45,7 +49,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
         ));
       }
       setState(() {
-        _locations = tmp;
+        _markers = tmp;
       });
     });
   }
@@ -56,13 +60,30 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     return new Scaffold(
       body: GoogleMap(
         initialCameraPosition: _initialPosition,
-        markers: _locations,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
+        markers: _markers,
+        onMapCreated: _onMapCreated,
+        myLocationEnabled: true,
       ),
     );
   }
+
+
+  // Locate user on map (but only for the first time, after launching the app):
+  gps.Location _location = gps.Location();
+  bool _locatedOnce = false;
+  void _onMapCreated(GoogleMapController controller) {
+    _location.onLocationChanged.listen((data) {
+      if (_locatedOnce == false && data.latitude != null && data.longitude != null) {
+        controller.animateCamera(
+          CameraUpdate.newCameraPosition(
+              CameraPosition(target: LatLng(data.latitude!, data.longitude!), zoom: 15)
+          ),
+        );
+        _locatedOnce = true;
+      }
+    });
+  }
+
 
   // Making sure that state will not be lost after changing page:
   @override

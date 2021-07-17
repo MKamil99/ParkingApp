@@ -9,11 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  google_maps_flutter: ^2.0.6
   flutter_rating_bar: ^4.0.0
+  google_maps_flutter: ^2.0.6
+  location: ^4.3.0
   moor_flutter: ^4.0.0
   provider: ^5.0.0
-  cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:

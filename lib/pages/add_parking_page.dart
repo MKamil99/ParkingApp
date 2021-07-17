@@ -1,14 +1,14 @@
 // Minor part of the code used in this file bases on
 // https://stackoverflow.com/questions/53652573/fix-google-map-marker-in-center
 
-// TODO: Clear fields after submitting, change pin icon, add "Rating" label,
-// TODO: locate user on map (position + zoom; to improve adding new parking)
+// TODO: Clear fields after submitting, change pin icon, add "Rating" label
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:parking_app/db/moor_database.dart';
+import 'package:location/location.dart' as gps;
 
 class AddParkingPage extends StatefulWidget {
   const AddParkingPage({Key? key}) : super(key: key);
@@ -26,9 +26,10 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
   int? _ranking;
   bool canAdd() => _latitude != null && _longitude != null && _name.isNotEmpty;
 
+  // Poland as initial camera position:
   static final CameraPosition _initialPosition = CameraPosition(
-    target: LatLng(50.36, 18.93),
-    zoom: 9,
+    target: LatLng(52.90, 19),
+    zoom: 5.75,
   );
 
   @override
@@ -55,6 +56,8 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
                     child: GoogleMap(
                       initialCameraPosition: _initialPosition,
                       onCameraMove: ((position) => updatePosition(position)),
+                      onMapCreated: _onMapCreated,
+                      myLocationEnabled: true,
                     ),
                   ),
                   Positioned(
@@ -124,6 +127,24 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
     _longitude = position.target.longitude;
     _latitude = position.target.latitude;
   }
+
+
+  // Locate user on map (but only for the first time, after launching the app):
+  gps.Location _location = gps.Location();
+  bool _locatedOnce = false;
+  void _onMapCreated(GoogleMapController controller) {
+    _location.onLocationChanged.listen((data) {
+      if (_locatedOnce == false && data.latitude != null && data.longitude != null) {
+        controller.animateCamera(
+          CameraUpdate.newCameraPosition(
+              CameraPosition(target: LatLng(data.latitude!, data.longitude!), zoom: 15)
+          ),
+        );
+        _locatedOnce = true;
+      }
+    });
+  }
+
 
   // Making sure that state will not be lost after changing page:
   @override
