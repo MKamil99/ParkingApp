@@ -3,8 +3,6 @@
 // (it is also used in Add Parking Page's map);
 // Pin icon made by Vectors Market from www.flaticon.com
 
-// TODO: Show last-added location at the start, display ranking, add possibility to delete (or even edit) location
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -55,10 +53,45 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
           icon: _marker,
           markerId: MarkerId(location.name),
           position: LatLng(location.latitude, location.longitude),
-          infoWindow: InfoWindow(
-            title: location.name,
-            snippet: location.description,
-          ),
+          onTap: () {
+            showDialog(context: context, builder: (_) {
+                 return AlertDialog(
+                   title: Text(location.name),
+                   content: Column(
+                     crossAxisAlignment: CrossAxisAlignment.start,
+                     mainAxisSize: MainAxisSize.min,
+                     children: [
+                       Text("Description: " + location.description),
+                       SizedBox(height: 5),
+                       Text("Coordinates: \n(" + location.latitude.toString()
+                           + ", \n" + location.longitude.toString() + ")"),
+                       SizedBox(height: 5),
+                       Text("Rating: " + (location.ranking == null ? "Unknown" : location.ranking!.toDouble()).toString())
+                     ],
+                   ),
+                   actions: [
+                     TextButton(
+                       child: Text("Delete", style: TextStyle(color: Colors.red)),
+                       onPressed: () {
+                         // Delete location:
+                         setState(() {
+                           database.deleteLocation(location);
+                         });
+                         // Go back:
+                         Navigator.of(context).pop();
+                       },
+                     ),
+                     TextButton(
+                       child: Text("Okay"),
+                       onPressed: () {
+                         // Go back:
+                         Navigator.of(context).pop();
+                       },
+                     ),
+                   ],
+                 );
+            });
+          }
         ));
       }
       setState(() {
