@@ -1,6 +1,7 @@
-// Minor part of the code used in this file bases on
-// https://stackoverflow.com/questions/53652573/fix-google-map-marker-in-center;
-// Pin icon made by Vectors Market from www.flaticon.com
+// Code used in this file bases on:
+// - https://levelup.gitconnected.com/how-to-add-google-maps-in-a-flutter-app-and-get-the-current-location-of-the-user-dynamically-2172f0be53f6 (user location, camera animating),
+// - https://stackoverflow.com/questions/53652573/fix-google-map-marker-in-center (using Stack to add pin in a center of map).
+// Pin icon was made by Vectors Market from www.flaticon.com.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -10,8 +11,6 @@ import 'package:parking_app/db/moor_database.dart';
 import 'package:location/location.dart' as gps;
 
 class AddParkingPage extends StatefulWidget {
-  const AddParkingPage({Key? key}) : super(key: key);
-
   @override
   _AddParkingPageState createState() => _AddParkingPageState();
 }
@@ -134,7 +133,7 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
               latitude: _latitude!,
               longitude: _longitude!,
               description: _description,
-              ranking: _rating
+              rating: _rating
           )
       );
     });

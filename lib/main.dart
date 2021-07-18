@@ -1,6 +1,6 @@
-// Code used in Bottom Navigation Bar bases on YouTube
-// tutorials: https://www.youtube.com/watch?v=elLkVWt7gRM
-// and https://www.youtube.com/watch?v=YJEMMhA9udQ
+// Code used in this file bases on:
+// - https://www.youtube.com/watch?v=elLkVWt7gRM (Bottom Navigation Bar: basics),
+// - https://www.youtube.com/watch?v=YJEMMhA9udQ (Bottom Navigation Bar: changing pages).
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,8 +11,6 @@ import 'package:parking_app/pages/home_page.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Provider(
@@ -46,7 +44,7 @@ class _MainPageState extends State<MainPage> {
       body: PageView(
         controller: _pageController,
         children: _pages,
-        physics: NeverScrollableScrollPhysics(),
+        physics: NeverScrollableScrollPhysics(), // prevents changing pages by swiping
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,

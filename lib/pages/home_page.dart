@@ -1,7 +1,8 @@
-// Code used in this file bases on https://www.youtube.com/watch?v=gTHKFRRSPss
-// and https://levelup.gitconnected.com/how-to-add-google-maps-in-a-flutter-app-and-get-the-current-location-of-the-user-dynamically-2172f0be53f6
-// (it is also used in Add Parking Page's map);
-// Pin icon made by Vectors Market from www.flaticon.com
+// Code used in this file bases on:
+// - https://levelup.gitconnected.com/how-to-add-google-maps-in-a-flutter-app-and-get-the-current-location-of-the-user-dynamically-2172f0be53f6 (user location, camera animating),
+// - https://stackoverflow.com/questions/53700347/how-do-i-make-an-editable-listview-item (stateful builder used for refreshing dialog),
+// - https://www.youtube.com/watch?v=gTHKFRRSPss (adding markers, custom marker).
+// Pin icon was made by Vectors Market from www.flaticon.com.
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -11,8 +12,6 @@ import 'package:parking_app/db/moor_database.dart';
 import 'package:location/location.dart' as gps;
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
-
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -20,6 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   Set<Marker> _markers = {};
   List<Location> _locations = [];
+  List<Location> _matchingLocations = [];
   late GoogleMapController _controller;
 
   // Poland as initial camera position:
@@ -71,11 +71,11 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                 _contentChildren.add(SizedBox(height: 5));
               }
               _contentChildren.add(Text(
-                  "Coordinates: (${location.latitude.toStringAsFixed(5)}, "
-                  "${location.longitude.toStringAsFixed(5)})"));
-              if (location.ranking != null) {
+                "Coordinates: (${location.latitude.toStringAsFixed(5)}, "
+                "${location.longitude.toStringAsFixed(5)})"));
+              if (location.rating != null) {
                 _contentChildren.add(SizedBox(height: 5));
-                _contentChildren.add(Text("Rating: ${location.ranking}/5"));
+                _contentChildren.add(Text("Rating: ${location.rating}/5"));
               }
 
               // Display dialog:
@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                       setState(() { database.deleteLocation(location); });
                       // Go back:
                       Navigator.of(context).pop();
-                      },
+                    },
                   ),
                   TextButton(
                     child: Text("Okay"),
@@ -132,42 +132,55 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
               icon: Icon(Icons.search),
               onPressed: () {
                 showDialog(context: context, builder: (_) {
-                  return AlertDialog(
-                    title: Text('List of parking locations'),
-                    insetPadding: EdgeInsets.all(16),
-                    contentPadding: EdgeInsets.fromLTRB(12, 20, 12, 24),
-                    content: Container(
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _locations.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ListTile(
-                            title: Text(_locations[index].name),
-                            subtitle: Text(_locations[index].description),
-                            trailing: IconButton(
-                              icon: Icon(Icons.arrow_forward),
-                              onPressed: () {
-                                // Close dialog:
-                                Navigator.of(context).pop();
-                                // Go to specific position:
-                                changeCameraPosition(_locations[index].latitude, _locations[index].longitude);
-                              },
-                            ),
-                          );
+                  _matchingLocations = _locations;
+                  return StatefulBuilder(
+                    builder: (context, setState) => AlertDialog(
+                      title: TextField(
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.search),
+                            hintText: 'Enter parking name...',
+                        ),
+                        onChanged: (str) {
+                          setState(() {
+                            _matchingLocations = _locations.where((element) => element.name.contains(str)).toList();
+                          });
                         },
                       ),
-                    ),
-                    actions: [
-                      TextButton(
-                        child: Text('Close'),
-                        onPressed: () {
-                          // Go back:
-                          Navigator.of(context).pop();
-                        },
+                      insetPadding: EdgeInsets.all(16),
+                      contentPadding: EdgeInsets.fromLTRB(12, 20, 12, 0),
+                      content: Container(
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _matchingLocations.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListTile(
+                              title: Text(_matchingLocations[index].name),
+                              subtitle: Text(_matchingLocations[index].description),
+                              trailing: IconButton(
+                                icon: Icon(Icons.arrow_forward),
+                                onPressed: () {
+                                  // Close dialog:
+                                  Navigator.of(context).pop();
+                                  // Go to specific position:
+                                  changeCameraPosition(_matchingLocations[index].latitude, _matchingLocations[index].longitude);
+                                },
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ],
+                      actions: [
+                        TextButton(
+                          child: Text('Close'),
+                          onPressed: () {
+                            // Go back:
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    )
                   );
                 });
               },

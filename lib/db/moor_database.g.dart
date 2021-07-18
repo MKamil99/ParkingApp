@@ -13,14 +13,14 @@ class Location extends DataClass implements Insertable<Location> {
   final double longitude;
   final String name;
   final String description;
-  final int? ranking;
+  final int? rating;
   Location(
       {this.id,
       required this.latitude,
       required this.longitude,
       required this.name,
       required this.description,
-      this.ranking});
+      this.rating});
   factory Location.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -34,8 +34,8 @@ class Location extends DataClass implements Insertable<Location> {
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
       description: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}description'])!,
-      ranking: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}ranking']),
+      rating: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}rating']),
     );
   }
   @override
@@ -48,8 +48,8 @@ class Location extends DataClass implements Insertable<Location> {
     map['longitude'] = Variable<double>(longitude);
     map['name'] = Variable<String>(name);
     map['description'] = Variable<String>(description);
-    if (!nullToAbsent || ranking != null) {
-      map['ranking'] = Variable<int?>(ranking);
+    if (!nullToAbsent || rating != null) {
+      map['rating'] = Variable<int?>(rating);
     }
     return map;
   }
@@ -61,9 +61,8 @@ class Location extends DataClass implements Insertable<Location> {
       longitude: Value(longitude),
       name: Value(name),
       description: Value(description),
-      ranking: ranking == null && nullToAbsent
-          ? const Value.absent()
-          : Value(ranking),
+      rating:
+          rating == null && nullToAbsent ? const Value.absent() : Value(rating),
     );
   }
 
@@ -76,7 +75,7 @@ class Location extends DataClass implements Insertable<Location> {
       longitude: serializer.fromJson<double>(json['longitude']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String>(json['description']),
-      ranking: serializer.fromJson<int?>(json['ranking']),
+      rating: serializer.fromJson<int?>(json['rating']),
     );
   }
   @override
@@ -88,7 +87,7 @@ class Location extends DataClass implements Insertable<Location> {
       'longitude': serializer.toJson<double>(longitude),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String>(description),
-      'ranking': serializer.toJson<int?>(ranking),
+      'rating': serializer.toJson<int?>(rating),
     };
   }
 
@@ -98,14 +97,14 @@ class Location extends DataClass implements Insertable<Location> {
           double? longitude,
           String? name,
           String? description,
-          int? ranking}) =>
+          int? rating}) =>
       Location(
         id: id ?? this.id,
         latitude: latitude ?? this.latitude,
         longitude: longitude ?? this.longitude,
         name: name ?? this.name,
         description: description ?? this.description,
-        ranking: ranking ?? this.ranking,
+        rating: rating ?? this.rating,
       );
   @override
   String toString() {
@@ -115,7 +114,7 @@ class Location extends DataClass implements Insertable<Location> {
           ..write('longitude: $longitude, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
-          ..write('ranking: $ranking')
+          ..write('rating: $rating')
           ..write(')'))
         .toString();
   }
@@ -128,7 +127,7 @@ class Location extends DataClass implements Insertable<Location> {
           $mrjc(
               longitude.hashCode,
               $mrjc(name.hashCode,
-                  $mrjc(description.hashCode, ranking.hashCode))))));
+                  $mrjc(description.hashCode, rating.hashCode))))));
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -138,7 +137,7 @@ class Location extends DataClass implements Insertable<Location> {
           other.longitude == this.longitude &&
           other.name == this.name &&
           other.description == this.description &&
-          other.ranking == this.ranking);
+          other.rating == this.rating);
 }
 
 class LocationsCompanion extends UpdateCompanion<Location> {
@@ -147,14 +146,14 @@ class LocationsCompanion extends UpdateCompanion<Location> {
   final Value<double> longitude;
   final Value<String> name;
   final Value<String> description;
-  final Value<int?> ranking;
+  final Value<int?> rating;
   const LocationsCompanion({
     this.id = const Value.absent(),
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
-    this.ranking = const Value.absent(),
+    this.rating = const Value.absent(),
   });
   LocationsCompanion.insert({
     this.id = const Value.absent(),
@@ -162,7 +161,7 @@ class LocationsCompanion extends UpdateCompanion<Location> {
     required double longitude,
     required String name,
     required String description,
-    this.ranking = const Value.absent(),
+    this.rating = const Value.absent(),
   })  : latitude = Value(latitude),
         longitude = Value(longitude),
         name = Value(name),
@@ -173,7 +172,7 @@ class LocationsCompanion extends UpdateCompanion<Location> {
     Expression<double>? longitude,
     Expression<String>? name,
     Expression<String>? description,
-    Expression<int?>? ranking,
+    Expression<int?>? rating,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -181,7 +180,7 @@ class LocationsCompanion extends UpdateCompanion<Location> {
       if (longitude != null) 'longitude': longitude,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
-      if (ranking != null) 'ranking': ranking,
+      if (rating != null) 'rating': rating,
     });
   }
 
@@ -191,14 +190,14 @@ class LocationsCompanion extends UpdateCompanion<Location> {
       Value<double>? longitude,
       Value<String>? name,
       Value<String>? description,
-      Value<int?>? ranking}) {
+      Value<int?>? rating}) {
     return LocationsCompanion(
       id: id ?? this.id,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       name: name ?? this.name,
       description: description ?? this.description,
-      ranking: ranking ?? this.ranking,
+      rating: rating ?? this.rating,
     );
   }
 
@@ -220,8 +219,8 @@ class LocationsCompanion extends UpdateCompanion<Location> {
     if (description.present) {
       map['description'] = Variable<String>(description.value);
     }
-    if (ranking.present) {
-      map['ranking'] = Variable<int?>(ranking.value);
+    if (rating.present) {
+      map['rating'] = Variable<int?>(rating.value);
     }
     return map;
   }
@@ -234,7 +233,7 @@ class LocationsCompanion extends UpdateCompanion<Location> {
           ..write('longitude: $longitude, ')
           ..write('name: $name, ')
           ..write('description: $description, ')
-          ..write('ranking: $ranking')
+          ..write('rating: $rating')
           ..write(')'))
         .toString();
   }
@@ -274,13 +273,13 @@ class $LocationsTable extends Locations
           GeneratedColumn.checkTextLength(minTextLength: 0, maxTextLength: 50),
       typeName: 'TEXT',
       requiredDuringInsert: true);
-  final VerificationMeta _rankingMeta = const VerificationMeta('ranking');
-  late final GeneratedColumn<int?> ranking = GeneratedColumn<int?>(
-      'ranking', aliasedName, true,
+  final VerificationMeta _ratingMeta = const VerificationMeta('rating');
+  late final GeneratedColumn<int?> rating = GeneratedColumn<int?>(
+      'rating', aliasedName, true,
       typeName: 'INTEGER', requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, latitude, longitude, name, description, ranking];
+      [id, latitude, longitude, name, description, rating];
   @override
   String get aliasedName => _alias ?? 'locations';
   @override
@@ -319,9 +318,9 @@ class $LocationsTable extends Locations
     } else if (isInserting) {
       context.missing(_descriptionMeta);
     }
-    if (data.containsKey('ranking')) {
-      context.handle(_rankingMeta,
-          ranking.isAcceptableOrUnknown(data['ranking']!, _rankingMeta));
+    if (data.containsKey('rating')) {
+      context.handle(_ratingMeta,
+          rating.isAcceptableOrUnknown(data['rating']!, _ratingMeta));
     }
     return context;
   }
