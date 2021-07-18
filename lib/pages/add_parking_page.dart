@@ -1,6 +1,7 @@
 // Code used in this file bases on:
 // - https://levelup.gitconnected.com/how-to-add-google-maps-in-a-flutter-app-and-get-the-current-location-of-the-user-dynamically-2172f0be53f6 (user location, camera animating),
-// - https://stackoverflow.com/questions/53652573/fix-google-map-marker-in-center (using Stack to add pin in a center of map).
+// - https://stackoverflow.com/questions/53652573/fix-google-map-marker-in-center (using Stack to add pin in a center of map),
+// - https://github.com/flutter/flutter/issues/39797 (Google Maps Widget black screen issue).
 // Pin icon was made by Vectors Market from www.flaticon.com.
 
 import 'package:flutter/material.dart';
@@ -21,7 +22,10 @@ class _AddParkingPageState extends State<AddParkingPage> {
   String _name = '';
   String _description = '';
   int? _rating;
+
+  // Conditions:
   bool canAdd() => _latitude != null && _longitude != null && _name.isNotEmpty;
+  bool _isLoading = true;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +60,9 @@ class _AddParkingPageState extends State<AddParkingPage> {
                       initialCameraPosition: _initialPosition,
                       myLocationEnabled: true,
                       onCameraMove: ((position) => updatePosition(position)),
+                      onMapCreated: (GoogleMapController controller) {
+                        setState(() { _isLoading = false; });
+                      },
                     ),
                   ),
                   Positioned(
@@ -63,6 +70,15 @@ class _AddParkingPageState extends State<AddParkingPage> {
                     left: (_mapWidth - _iconSize) / 2,
                     child: Image.asset('assets/parking_marker.png', height: _iconSize, width: _iconSize),
                   ),
+                  if (_isLoading)
+                    Container(
+                      height: _mapHeight,
+                      width: _mapWidth,
+                      color: Colors.grey[100],
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
                 ],
               ),
               Expanded(

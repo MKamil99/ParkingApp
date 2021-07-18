@@ -1,7 +1,8 @@
 // Code used in this file bases on:
 // - https://levelup.gitconnected.com/how-to-add-google-maps-in-a-flutter-app-and-get-the-current-location-of-the-user-dynamically-2172f0be53f6 (user location, camera animating),
 // - https://stackoverflow.com/questions/53700347/how-do-i-make-an-editable-listview-item (stateful builder used for refreshing dialog),
-// - https://www.youtube.com/watch?v=gTHKFRRSPss (adding markers, custom marker).
+// - https://www.youtube.com/watch?v=gTHKFRRSPss (adding markers, custom marker),
+// - https://github.com/flutter/flutter/issues/39797 (Google Maps Widget black screen issue).
 // Pin icon was made by Vectors Market from www.flaticon.com.
 
 import 'dart:async';
@@ -17,11 +18,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // Data:
   Set<Marker> _markers = {};
   List<Location> _locations = [];
   List<Location> _matchingLocations = [];
   late GoogleMapController _controller;
   late CameraPosition _currentCameraPosition;
+  bool _isLoading = true;
 
   // Poland as initial camera position:
   static final CameraPosition _initialPosition = CameraPosition(
@@ -186,12 +189,25 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: GoogleMap(
-        initialCameraPosition: _initialPosition,
-        markers: _markers,
-        myLocationEnabled: true,
-        onCameraMove: ((position) => _currentCameraPosition = position),
-        onMapCreated: _onMapCreated,
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: _initialPosition,
+            markers: _markers,
+            myLocationEnabled: true,
+            onCameraMove: ((position) => _currentCameraPosition = position),
+            onMapCreated: _onMapCreated,
+          ),
+          if (_isLoading)
+            Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              color: Colors.grey[100],
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add_location),
@@ -205,10 +221,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Locate user on map after launching the app:
+  // Location stuff:
   gps.Location _location = gps.Location();
   bool _locatedOnce = false;
   void _onMapCreated(GoogleMapController controller) {
+    // Map has been loaded:
+    setState(() { _isLoading = false; });
+
+    // Locate user on map after launching the app:
     _controller = controller;
     _location.onLocationChanged.listen((data) {
       if (_locatedOnce == false && data.latitude != null && data.longitude != null) {
