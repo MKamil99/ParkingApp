@@ -144,7 +144,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                         onChanged: (str) {
                           setState(() {
-                            _matchingLocations = _locations.where((element) => element.name.contains(str)).toList();
+                            _matchingLocations = _locations.where(
+                                    (element) => element.name.toLowerCase().contains(str.toLowerCase())).toList();
                           });
                         },
                       ),
