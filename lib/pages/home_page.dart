@@ -16,11 +16,12 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+class _HomePageState extends State<HomePage> {
   Set<Marker> _markers = {};
   List<Location> _locations = [];
   List<Location> _matchingLocations = [];
   late GoogleMapController _controller;
+  late CameraPosition _currentCameraPosition;
 
   // Poland as initial camera position:
   static final CameraPosition _initialPosition = CameraPosition(
@@ -37,7 +38,6 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     );
   }
 
-  // Database:
   @override
   initState() {
     super.initState();
@@ -45,6 +45,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     initDatabase();
   }
 
+  // Database:
   void initDatabase() async {
     // Wait a second, database needs to launch:
     await Future.delayed(Duration(seconds: 1));
@@ -120,10 +121,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return new Scaffold(
       appBar: AppBar(
         title: Text('Simple Parking App'),
@@ -190,12 +189,21 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       body: GoogleMap(
         initialCameraPosition: _initialPosition,
         markers: _markers,
-        onMapCreated: _onMapCreated,
         myLocationEnabled: true,
+        onCameraMove: ((position) => _currentCameraPosition = position),
+        onMapCreated: _onMapCreated,
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add_location),
+        onPressed: () {
+          Navigator.pushNamed(context, '/add', arguments: {
+            'cameraPosition': _currentCameraPosition,
+          });
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
-
 
   // Locate user on map after launching the app:
   gps.Location _location = gps.Location();
@@ -218,9 +226,4 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       ),
     );
   }
-
-
-  // Making sure that state will not be lost after changing page:
-  @override
-  bool get wantKeepAlive => true;
 }

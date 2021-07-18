@@ -1,7 +1,3 @@
-// Code used in this file bases on:
-// - https://www.youtube.com/watch?v=elLkVWt7gRM (Bottom Navigation Bar: basics),
-// - https://www.youtube.com/watch?v=YJEMMhA9udQ (Bottom Navigation Bar: changing pages).
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:parking_app/db/moor_database.dart';
@@ -16,56 +12,14 @@ class MyApp extends StatelessWidget {
     return Provider(
       create: (_) => AppDatabase(),
       child: MaterialApp(
-          home: MainPage(),
+          initialRoute: '/',
+          routes: {
+            '/': (context) => HomePage(),
+            '/add': (context) => AddParkingPage(),
+          },
           theme: ThemeData(
             primarySwatch: Colors.green,
           )
-      ),
-    );
-  }
-}
-
-
-class MainPage extends StatefulWidget {
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  PageController _pageController = PageController();
-  List<Widget> _pages = [HomePage(), AddParkingPage()];
-
-  int _currentIndex = 0;
-  final _fontSize = 13.0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        children: _pages,
-        physics: NeverScrollableScrollPhysics(), // prevents changing pages by swiping
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_location),
-            label: 'Add Parking',
-          ),
-        ],
-        // Changing selection and page by tapping:
-        onTap: (index) {
-          _pageController.jumpToPage(index);
-          setState(() { _currentIndex = index; });
-        },
-        // The same font size for all fonts in NavBar:
-        selectedFontSize: _fontSize,
-        unselectedFontSize: _fontSize,
       ),
     );
   }

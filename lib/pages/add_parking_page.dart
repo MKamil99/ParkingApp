@@ -8,14 +8,13 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:parking_app/db/moor_database.dart';
-import 'package:location/location.dart' as gps;
 
 class AddParkingPage extends StatefulWidget {
   @override
   _AddParkingPageState createState() => _AddParkingPageState();
 }
 
-class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAliveClientMixin {
+class _AddParkingPageState extends State<AddParkingPage> {
   // Data:
   double? _latitude;
   double? _longitude;
@@ -24,23 +23,19 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
   int? _rating;
   bool canAdd() => _latitude != null && _longitude != null && _name.isNotEmpty;
 
-  // Poland as initial camera position:
-  static final CameraPosition _initialPosition = CameraPosition(
-    target: LatLng(52.90, 19),
-    zoom: 5.75,
-  );
-
-  // Text field controllers:
-  final _nameFieldController = TextEditingController();
-  final _descFieldController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    // Database:
     final _database = Provider.of<AppDatabase>(context);
+
+    // Dimensions:
     double _mapHeight = MediaQuery.of(context).size.height / 3;
     double _mapWidth = MediaQuery.of(context).size.width;
     double _iconSize = 30.0;
+
+    // Navigation arguments:
+    Map data = ModalRoute.of(context)?.settings.arguments as Map;
+    CameraPosition _initialPosition = data['cameraPosition'];
 
     return Scaffold(
       appBar: AppBar(
@@ -48,8 +43,7 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
       ),
       body: SingleChildScrollView(
         child: Container(
-          height: MediaQuery.of(context).size.height
-              - kToolbarHeight - kBottomNavigationBarHeight - 25,
+          height: MediaQuery.of(context).size.height - kToolbarHeight - 50,
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
@@ -60,9 +54,8 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
                     width: _mapWidth,
                     child: GoogleMap(
                       initialCameraPosition: _initialPosition,
-                      onCameraMove: ((position) => updatePosition(position)),
-                      onMapCreated: _onMapCreated,
                       myLocationEnabled: true,
+                      onCameraMove: ((position) => updatePosition(position)),
                     ),
                   ),
                   Positioned(
@@ -82,14 +75,12 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
                         decoration: InputDecoration(labelText: "Name"),
                         onChanged: (str) { setState(() { _name = str; }); },
                         maxLength: 20,
-                        controller: _nameFieldController,
                       ),
                       TextField(
                         decoration: InputDecoration(labelText: "Description"),
                         onChanged: (str) { setState(() { _description = str; }); },
                         maxLength: 50,
                         maxLines: 1,
-                        controller: _descFieldController,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -125,34 +116,19 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
 
   // Adding parking location to database:
   void addLocation(BuildContext context, AppDatabase database) {
-    // Update ui and database:
-    setState(() {
-      database.insertLocation(
-          Location(
-              name: _name,
-              latitude: _latitude!,
-              longitude: _longitude!,
-              description: _description,
-              rating: _rating
-          )
-      );
-    });
+    // Update database:
+    database.insertLocation(
+        Location(
+            name: _name,
+            latitude: _latitude!,
+            longitude: _longitude!,
+            description: _description,
+            rating: _rating
+        )
+    );
 
-    // Clear text fields:
-    _nameFieldController.clear();
-    _descFieldController.clear();
-
-    // Place camera in current location:
-    _locatedOnce = false;
-
-    // Reset properties:
-    _latitude = null;
-    _longitude = null;
-    _name = '';
-    _description = '';
-    _rating = null;
-
-    // TODO: Reset rating bar
+    // Go back to Home Page:
+    Navigator.of(context).pop();
   }
 
   // Updating _latitude and _longitude variables after moving camera:
@@ -160,24 +136,4 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
     _longitude = position.target.longitude;
     _latitude = position.target.latitude;
   }
-
-  // Locate user on map (but only for the first time, after launching the app):
-  gps.Location _location = gps.Location();
-  bool _locatedOnce = false;
-  void _onMapCreated(GoogleMapController controller) {
-    _location.onLocationChanged.listen((data) {
-      if (_locatedOnce == false && data.latitude != null && data.longitude != null) {
-        controller.animateCamera(
-          CameraUpdate.newCameraPosition(
-              CameraPosition(target: LatLng(data.latitude!, data.longitude!), zoom: 15)
-          ),
-        );
-        _locatedOnce = true;
-      }
-    });
-  }
-
-  // Making sure that state will not be lost after changing page:
-  @override
-  bool get wantKeepAlive => true;
 }
