@@ -19,6 +19,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
   Set<Marker> _markers = {};
+  List<Location> _locations = [];
+  late GoogleMapController _controller;
 
   // Poland as initial camera position:
   static final CameraPosition _initialPosition = CameraPosition(
@@ -112,6 +114,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       setState(() {
         _markers = tmp;
       });
+
+      // Also, update _locations variable so they will be displayed in Search Dialog:
+      _locations = data;
     });
   }
 
@@ -120,6 +125,55 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   Widget build(BuildContext context) {
     super.build(context);
     return new Scaffold(
+      appBar: AppBar(
+        title: Text('Simple Parking App'),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                showDialog(context: context, builder: (_) {
+                  return AlertDialog(
+                    title: Text('List of parking locations'),
+                    insetPadding: EdgeInsets.all(16),
+                    contentPadding: EdgeInsets.fromLTRB(12, 20, 12, 24),
+                    content: Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: _locations.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return ListTile(
+                            title: Text(_locations[index].name),
+                            subtitle: Text(_locations[index].description),
+                            trailing: IconButton(
+                              icon: Icon(Icons.arrow_forward),
+                              onPressed: () {
+                                // Close dialog:
+                                Navigator.of(context).pop();
+                                // Go to specific position:
+                                changeCameraPosition(_locations[index].latitude, _locations[index].longitude);
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        child: Text('Close'),
+                        onPressed: () {
+                          // Go back:
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                });
+              },
+          ),
+        ],
+      ),
       body: GoogleMap(
         initialCameraPosition: _initialPosition,
         markers: _markers,
@@ -130,20 +184,26 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   }
 
 
-  // Locate user on map (but only for the first time, after launching the app):
+  // Locate user on map after launching the app:
   gps.Location _location = gps.Location();
   bool _locatedOnce = false;
   void _onMapCreated(GoogleMapController controller) {
+    _controller = controller;
     _location.onLocationChanged.listen((data) {
       if (_locatedOnce == false && data.latitude != null && data.longitude != null) {
-        controller.animateCamera(
-          CameraUpdate.newCameraPosition(
-              CameraPosition(target: LatLng(data.latitude!, data.longitude!), zoom: 15)
-          ),
-        );
+        changeCameraPosition(data.latitude!, data.longitude!);
         _locatedOnce = true;
       }
     });
+  }
+
+  // Move Google Maps camera to certain position (with animation):
+  void changeCameraPosition(double latitude, double longitude) {
+    _controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+          CameraPosition(target: LatLng(latitude, longitude), zoom: 15)
+      ),
+    );
   }
 
 

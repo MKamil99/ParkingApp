@@ -44,6 +44,9 @@ class _AddParkingPageState extends State<AddParkingPage> with AutomaticKeepAlive
     double _iconSize = 30.0;
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Simple Parking App'),
+      ),
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height

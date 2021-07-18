@@ -43,9 +43,6 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Simple Parking App'),
-      ),
       body: PageView(
         controller: _pageController,
         children: _pages,
