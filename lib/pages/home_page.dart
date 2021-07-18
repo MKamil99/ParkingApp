@@ -44,52 +44,67 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   }
 
   void initDatabase() async {
+    // Wait a second, database needs to launch:
     await Future.delayed(Duration(seconds: 1));
+
+    // Watch all records in "Locations" table:
     final database = Provider.of<AppDatabase>(context, listen: false);
     database.watchAllLocations().listen((data) {
+      // If something changed (added / deleted record), cast all records into Markers
+      // and update _markers variable so they will be displayed on map:
       Set<Marker> tmp = {};
       for (Location location in data) {
         tmp.add(Marker(
           icon: _marker,
-          markerId: MarkerId(location.name),
+          markerId: MarkerId(location.id.toString()),
           position: LatLng(location.latitude, location.longitude),
+          // Custom onTap method which displays dialog with location details:
           onTap: () {
             showDialog(context: context, builder: (_) {
-                 return AlertDialog(
-                   title: Text(location.name),
-                   content: Column(
-                     crossAxisAlignment: CrossAxisAlignment.start,
-                     mainAxisSize: MainAxisSize.min,
-                     children: [
-                       Text("Description: " + location.description),
-                       SizedBox(height: 5),
-                       Text("Coordinates: \n(" + location.latitude.toString()
-                           + ", \n" + location.longitude.toString() + ")"),
-                       SizedBox(height: 5),
-                       Text("Rating: " + (location.ranking == null ? "Unknown" : location.ranking!.toDouble()).toString())
-                     ],
-                   ),
-                   actions: [
-                     TextButton(
-                       child: Text("Delete", style: TextStyle(color: Colors.red)),
-                       onPressed: () {
-                         // Delete location:
-                         setState(() {
-                           database.deleteLocation(location);
-                         });
-                         // Go back:
-                         Navigator.of(context).pop();
-                       },
-                     ),
-                     TextButton(
-                       child: Text("Okay"),
-                       onPressed: () {
-                         // Go back:
-                         Navigator.of(context).pop();
-                       },
-                     ),
-                   ],
-                 );
+              // If location's property is not null and not empty, add it to content's children,
+              // so it will be displayed in dialog as Text:
+              List<Widget> _contentChildren = [];
+              if (location.description.length > 0) {
+                _contentChildren.add(Text("Description: ${location.description}"));
+                _contentChildren.add(SizedBox(height: 5));
+              }
+              _contentChildren.add(Text(
+                  "Coordinates: (${location.latitude.toStringAsFixed(5)}, "
+                  "${location.longitude.toStringAsFixed(5)})"));
+              if (location.ranking != null) {
+                _contentChildren.add(SizedBox(height: 5));
+                _contentChildren.add(Text("Rating: ${location.ranking}/5"));
+              }
+
+              // Display dialog:
+              return AlertDialog(
+                title: Text(location.name),
+                // Remove content's bottom padding:
+                contentPadding: EdgeInsets.fromLTRB(24, 20, 24, 0),
+                content: Column(
+                  children: _contentChildren,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                ),
+                actions: [
+                  TextButton(
+                    child: Text("Delete", style: TextStyle(color: Colors.red)),
+                    onPressed: () {
+                      // Delete location:
+                      setState(() { database.deleteLocation(location); });
+                      // Go back:
+                      Navigator.of(context).pop();
+                      },
+                  ),
+                  TextButton(
+                    child: Text("Okay"),
+                    onPressed: () {
+                      // Go back:
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
             });
           }
         ));
