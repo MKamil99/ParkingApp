@@ -4,6 +4,7 @@
 // - https://github.com/flutter/flutter/issues/39797 (Google Maps Widget black screen issue).
 // Pin icon was made by Vectors Market from www.flaticon.com.
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -61,7 +62,10 @@ class _AddParkingPageState extends State<AddParkingPage> {
                       myLocationEnabled: true,
                       onCameraMove: ((position) => updatePosition(position)),
                       onMapCreated: (GoogleMapController controller) {
-                        setState(() { _isLoading = false; });
+                        // Preventing black screen:
+                        Timer(Duration(milliseconds: 500), () {
+                          setState(() { _isLoading = false; });
+                        });
                       },
                     ),
                   ),
