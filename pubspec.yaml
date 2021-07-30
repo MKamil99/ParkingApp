@@ -1,5 +1,5 @@
 name: parking_app
-description: Simple Parking App - recruitment task for NaviParking
+description: Simple Parking App with custom markers on Google Maps widgets
 publish_to: 'none'
 version: 1.0.0+1
 

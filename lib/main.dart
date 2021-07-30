@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:parking_app/db/moor_database.dart';
 import 'package:parking_app/pages/add_parking_page.dart';
-import 'package:parking_app/pages/home_page.dart';
+import 'package:parking_app/pages/home/home_page.dart';
 
 void main() => runApp(MyApp());
 

@@ -1,6 +1,3 @@
-// Code used in this file bases on:
-// - https://medium.com/flutterdevs/moor-database-in-flutter-6a78d91b10e5 (databases with Moor: basics).
-
 import 'package:moor_flutter/moor_flutter.dart';
 part 'moor_database.g.dart';
 

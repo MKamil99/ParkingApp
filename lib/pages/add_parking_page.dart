@@ -1,9 +1,3 @@
-// Code used in this file bases on:
-// - https://levelup.gitconnected.com/how-to-add-google-maps-in-a-flutter-app-and-get-the-current-location-of-the-user-dynamically-2172f0be53f6 (user location, camera animating),
-// - https://stackoverflow.com/questions/53652573/fix-google-map-marker-in-center (using Stack to add pin in a center of map),
-// - https://github.com/flutter/flutter/issues/39797 (Google Maps Widget black screen issue).
-// Pin icon was made by Vectors Market from www.flaticon.com.
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -44,7 +38,7 @@ class _AddParkingPageState extends State<AddParkingPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Simple Parking App'),
+        title: Text('Parking App'),
       ),
       body: SingleChildScrollView(
         child: Container(
