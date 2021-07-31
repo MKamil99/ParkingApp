@@ -40,4 +40,5 @@ Special thanks to:
 * [Pavithran](https://levelup.gitconnected.com/how-to-add-google-maps-in-a-flutter-app-and-get-the-current-location-of-the-user-dynamically-2172f0be53f6) - for showing how to use Google Maps API,
 * [Pradip Debnath](https://www.youtube.com/watch?v=gTHKFRRSPss) - for showing how to add markers and custom marker,
 * [MitchSRobinson](https://github.com/flutter/flutter/issues/39797) - for showing how to (temporarily) fix Google Maps black screen issue,
+* [Francesco Mineo](https://medium.com/flutter-community/simple-ways-to-pass-to-and-share-data-with-widgets-pages-f8988534bd5b) - for showing how to use Provider and pass data downwards more efficiently,
 * [Vectors Market](https://www.flaticon.com/authors/vectors-market) - for parking pin icon.
