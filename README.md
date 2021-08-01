@@ -11,7 +11,10 @@
 *In progress*
 
 ### Used technologies
-*In progress*
+Project has been written in **Flutter 2.2** and here are some of the most important [dependencies](https://github.com/MKamil99/ParkingApp/blob/main/pubspec.yaml):
+* Moor_Flutter 4.0.0 - library responsible for storing data locally,
+* Google_Maps_Flutter 2.0.6 - library responsible for using custom Google Maps widgets,
+* Location 4.3.0 - library responsible for getting location data.
 
 ### How to compile it?
 ParkingApp uses Google Maps APIs: **Maps SDK for Android** and **Maps SDK for iOS**. 
