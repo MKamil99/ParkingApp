@@ -7,24 +7,18 @@ import 'dart:async';
 // and initial position in the current position from previous screen:
 class CustomMapInAdd extends StatefulWidget {
   // Parent's data:
-  final double mapHeight;
-  final double mapWidth;
   final Function setCoordinates;
 
-  CustomMapInAdd({
-    required this.mapHeight,
-    required this.mapWidth,
-    required this.setCoordinates,
-  });
+  CustomMapInAdd({ required this.setCoordinates });
 
   @override
   _CustomMapInAddState createState() => _CustomMapInAddState();
 }
 
 class _CustomMapInAddState extends State<CustomMapInAdd> {
-  // Data:
+  // Conditions:
   bool isLoading = true;
-  double iconSize = 30.0;
+  bool areCoordinatesInit = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,14 +27,21 @@ class _CustomMapInAddState extends State<CustomMapInAdd> {
     CameraPosition initialPosition = data['cameraPosition'];
 
     // Save current position:
-    widget.setCoordinates(initialPosition);
+    if (!areCoordinatesInit) {
+      widget.setCoordinates(initialPosition);
+      areCoordinatesInit = true;
+    }
+
+    // Dimensions:
+    const double mapHeight = 250;
+    const double iconSize = 30;
 
     // Render map with pin... or indicator:
     return Stack(
       children: [
         Container(
-          height: widget.mapHeight,
-          width: widget.mapWidth,
+          height: mapHeight,
+          width: double.maxFinite,
           child: GoogleMap(
             initialCameraPosition: initialPosition,
             myLocationEnabled: true,
@@ -48,12 +49,16 @@ class _CustomMapInAddState extends State<CustomMapInAdd> {
             onMapCreated: onMapCreated,
           ),
         ),
-        Positioned(
-          top: (widget.mapHeight) / 2 - iconSize,
-          left: (widget.mapWidth - iconSize) / 2,
-          child: Image.asset('assets/parking_marker.png', height: iconSize, width: iconSize),
+        Container(
+          height: mapHeight,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: iconSize / 2),
+              child: Image.asset('assets/parking_marker.png', height: iconSize, width: iconSize),
+            ),
+          ),
         ),
-        if (isLoading) CustomIndicator(height: widget.mapHeight),
+        if (isLoading) CustomIndicator(height: mapHeight),
       ],
     );
   }

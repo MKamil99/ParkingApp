@@ -16,13 +16,7 @@ class _AddParkingPageState extends State<AddParkingPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Database:
     final database = Provider.of<AppDatabase>(context);
-
-    // Dimensions:
-    double mapHeight = MediaQuery.of(context).size.height / 3;
-    double mapWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Parking App'),
@@ -33,11 +27,7 @@ class _AddParkingPageState extends State<AddParkingPage> {
           width: double.maxFinite,
           child: Column(
             children: [
-              CustomMapInAdd(
-                  mapHeight: mapHeight,
-                  mapWidth: mapWidth,
-                  setCoordinates: data.setCoordinates,
-              ),
+              CustomMapInAdd(setCoordinates: data.setCoordinates),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -52,7 +42,7 @@ class _AddParkingPageState extends State<AddParkingPage> {
                 ),
               ),
               ElevatedButton(
-                // Null makes the button disable:
+                // Null makes the button disabled:
                 onPressed: data.canAdd() ? () => addLocation(context, database) : null,
                 child: Text('Add'),
               ),
