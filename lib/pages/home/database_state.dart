@@ -39,7 +39,8 @@ abstract class DatabaseState extends State {
                     return PinDialog(
                         location: location,
                         database: database,
-                        setState: (input) => setState(input));
+                        setState: (input) => setState(input),
+                    );
                   });
             }));
       }

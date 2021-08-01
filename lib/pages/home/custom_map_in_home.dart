@@ -4,38 +4,23 @@ import 'package:parking_app/pages/home/marker_provider.dart';
 import 'package:location/location.dart';
 import 'package:flutter/material.dart';
 
-class CustomGoogleMap extends StatefulWidget {
+class CustomMapInHome extends StatefulWidget {
   // Parent's data:
   final Function setCurrentCameraPosition;
   final Function setGoogleMapController;
   final Function changeCameraPosition;
 
-  CustomGoogleMap({
+  CustomMapInHome({
     required this.setCurrentCameraPosition,
     required this.setGoogleMapController,
     required this.changeCameraPosition,
   });
 
   @override
-  _CustomGoogleMapState createState() => _CustomGoogleMapState(
-        setCurrentCameraPosition,
-        setGoogleMapController,
-        changeCameraPosition,
-      );
+  _CustomMapInHomeState createState() => _CustomMapInHomeState();
 }
 
-class _CustomGoogleMapState extends State {
-  // Parent's data:
-  final Function setCurrentCameraPosition;
-  final Function setGoogleMapController;
-  final Function changeCameraPosition;
-
-  _CustomGoogleMapState(
-    this.setCurrentCameraPosition,
-    this.setGoogleMapController,
-    this.changeCameraPosition,
-  );
-
+class _CustomMapInHomeState extends State<CustomMapInHome> {
   // Data:
   bool isLoading = true;
   static final CameraPosition initialPosition = CameraPosition(
@@ -52,7 +37,7 @@ class _CustomGoogleMapState extends State {
         initialCameraPosition: initialPosition,
         markers: markers,
         myLocationEnabled: true,
-        onCameraMove: ((position) => setCurrentCameraPosition(position)),
+        onCameraMove: ((position) => widget.setCurrentCameraPosition(position)),
         onMapCreated: onMapCreated,
       ),
       if (isLoading) CustomIndicator(),
@@ -69,10 +54,10 @@ class _CustomGoogleMapState extends State {
     Location location = Location();
 
     // Locate user on map after launching the app:
-    setGoogleMapController(controller);
+    widget.setGoogleMapController(controller);
     location.onLocationChanged.listen((data) {
       if (locatedOnce == false && data.latitude != null && data.longitude != null) {
-        changeCameraPosition(data.latitude!, data.longitude!);
+        widget.changeCameraPosition(data.latitude!, data.longitude!);
         locatedOnce = true;
       }
     });

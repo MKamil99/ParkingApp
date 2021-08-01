@@ -2,7 +2,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parking_app/pages/home/marker_provider.dart';
 import 'package:parking_app/pages/home/database_state.dart';
 import 'package:parking_app/pages/home/search_dialog.dart';
-import 'package:parking_app/pages/home/custom_map.dart';
+import 'package:parking_app/pages/home/custom_map_in_home.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,7 +28,7 @@ class _HomePageState extends DatabaseState {
         ],
       ),
       body: MarkerProvider(
-        child: CustomGoogleMap(
+        child: CustomMapInHome(
           setCurrentCameraPosition: setCurrentCameraPosition,
           setGoogleMapController: setGoogleMapController,
           changeCameraPosition: changeCameraPosition,
