@@ -1,12 +1,12 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:parking_app/pages/home/pin_dialog.dart';
+import 'package:parking_app/widgets/pin_dialog.dart';
 import 'package:parking_app/db/moor_database.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-// State with Moor stuff:
-abstract class DatabaseState extends State {
+// Class with Moor data:
+class DatabaseConnection {
   // Data:
   Set<Marker> markers = {};
   List<Location> locations = [];
@@ -19,7 +19,7 @@ abstract class DatabaseState extends State {
   }
 
   // Connection with database:
-  void initDatabase() async {
+  void initDatabase(BuildContext context, Function setState) async {
     // Wait a second, database needs to launch:
     await Future.delayed(Duration(seconds: 1));
 
@@ -49,19 +49,5 @@ abstract class DatabaseState extends State {
       // Also, update _locations variable so they will be displayed in Search Dialog:
       locations = data;
     });
-  }
-
-  // Setup custom marker and database while initializing the widget:
-  @override
-  initState() {
-    super.initState();
-    setupCustomMarker();
-    initDatabase();
-  }
-
-  // Return nothing (it will be overridden in its children):
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }

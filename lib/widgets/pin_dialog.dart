@@ -17,7 +17,6 @@ class PinDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> _contentChildren = pinData(location);
-
     return AlertDialog(
       title: Text(location.name),
       // Remove content's bottom padding:

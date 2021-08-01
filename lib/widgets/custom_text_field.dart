@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
+  // Parent's data:
   final String label;
   final int maxChars;
   final Function updateValue;

@@ -1,7 +1,7 @@
 import 'package:parking_app/pages/add_parking/add_parking_page_data.dart';
-import 'package:parking_app/pages/add_parking/custom_rating_bar.dart';
-import 'package:parking_app/pages/add_parking/custom_text_field.dart';
-import 'package:parking_app/pages/add_parking/custom_map_in_add.dart';
+import 'package:parking_app/widgets/custom_map_in_add.dart';
+import 'package:parking_app/widgets/custom_rating_bar.dart';
+import 'package:parking_app/widgets/custom_text_field.dart';
 import 'package:parking_app/db/moor_database.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ class AddParkingPage extends StatefulWidget {
   _AddParkingPageState createState() => _AddParkingPageState();
 }
 
-class _AddParkingPageState extends State {
+class _AddParkingPageState extends State<AddParkingPage> {
   final AddParkingPageData data = AddParkingPageData();
 
   @override

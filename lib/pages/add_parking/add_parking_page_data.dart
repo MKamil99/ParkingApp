@@ -1,5 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+// Class for data inserted by user in AddParkingPage:
 class AddParkingPageData {
   // Data:
   double? latitude;

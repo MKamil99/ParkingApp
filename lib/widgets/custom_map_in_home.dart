@@ -1,9 +1,12 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:parking_app/pages/home/custom_indicator.dart';
-import 'package:parking_app/pages/home/marker_provider.dart';
+import 'package:parking_app/widgets/custom_indicator.dart';
+import 'package:parking_app/widgets/marker_provider.dart';
 import 'package:location/location.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
+// Google Map widget used in HomePage - full screen map with set of markers,
+// initial position in Poland and animation of searching GPS location at the start:
 class CustomMapInHome extends StatefulWidget {
   // Parent's data:
   final Function setCurrentCameraPosition;
@@ -47,8 +50,10 @@ class _CustomMapInHomeState extends State<CustomMapInHome> {
   // Location stuff:
   bool locatedOnce = false;
   void onMapCreated(GoogleMapController controller) {
-    // Map has been loaded:
-    setState(() { isLoading = false; });
+    // Map has been loaded (and get rid of black screen):
+    Timer(Duration(milliseconds: 500), () {
+      setState(() { isLoading = false; });
+    });
 
     // Get location:
     Location location = Location();

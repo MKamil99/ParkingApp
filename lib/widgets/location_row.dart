@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:parking_app/db/moor_database.dart';
+import 'package:flutter/material.dart';
 
 // Single row in Search Dialog (name, description and arrow-button):
 class LocationRow extends StatelessWidget {

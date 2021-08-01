@@ -1,8 +1,8 @@
+import 'package:parking_app/pages/home/database_connection.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:parking_app/pages/home/marker_provider.dart';
-import 'package:parking_app/pages/home/database_state.dart';
-import 'package:parking_app/pages/home/search_dialog.dart';
-import 'package:parking_app/pages/home/custom_map_in_home.dart';
+import 'package:parking_app/widgets/custom_map_in_home.dart';
+import 'package:parking_app/widgets/marker_provider.dart';
+import 'package:parking_app/widgets/search_dialog.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,10 +10,19 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends DatabaseState {
+class _HomePageState extends State<HomePage> {
   // Data:
+  final DatabaseConnection db = DatabaseConnection();
   late GoogleMapController gmController;
   late CameraPosition currentCameraPosition;
+
+  // Setup custom marker and database while initializing the widget:
+  @override
+  initState() {
+    super.initState();
+    db.setupCustomMarker();
+    db.initDatabase(context, setState);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +42,7 @@ class _HomePageState extends DatabaseState {
           setGoogleMapController: setGoogleMapController,
           changeCameraPosition: changeCameraPosition,
         ),
-        markers: markers,
+        markers: db.markers,
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add_location),
@@ -62,11 +71,9 @@ class _HomePageState extends DatabaseState {
   // Show dialog with list of all locations and search bar:
   void showSearchDialog() {
     showDialog(context: context, builder: (_) {
-      return StatefulBuilder(
-          builder: (context, setState) => SearchDialog(
-              locations: locations,
-              changeCameraPosition: changeCameraPosition
-          )
+      return SearchDialog(
+          locations: db.locations,
+          changeCameraPosition: changeCameraPosition
       );
     });
   }

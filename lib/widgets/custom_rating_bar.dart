@@ -2,6 +2,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter/material.dart';
 
 class CustomRatingBar extends StatelessWidget {
+  // Parent's data:
   final Function setRating;
 
   CustomRatingBar({ required this.setRating });

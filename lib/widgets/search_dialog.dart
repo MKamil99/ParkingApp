@@ -1,4 +1,4 @@
-import 'package:parking_app/pages/home/location_row.dart';
+import 'package:parking_app/widgets/location_row.dart';
 import 'package:parking_app/db/moor_database.dart';
 import 'package:flutter/material.dart';
 
